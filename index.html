@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Camera App</title>
+    <style>
+        #video-container {
+            margin: 20px;
+            border: 2px solid #333;
+        }
+        #video-element {
+            width: 100%;
+            height: auto;
+        }
+        #capture-btn {
+            display: block;
+            margin: 10px auto;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div id="video-container">
+        <video id="video-element" autoplay></video>
+    </div>
+    <button id="capture-btn">Capture Photo</button>
+
+    <script>
+        const videoElement = document.getElementById('video-element');
+        const captureButton = document.getElementById('capture-btn');
+
+        // Access the camera and stream to video element
+        navigator.mediaDevices.getUserMedia({ video: true })
+            .then(stream => {
+                videoElement.srcObject = stream;
+            })
+            .catch(error => {
+                console.error('Error accessing the camera:', error);
+            });
+
+        // Capture photo from video stream
+        captureButton.addEventListener('click', () => {
+            const canvas = document.createElement('canvas');
+            canvas.width = videoElement.videoWidth;
+            canvas.height = videoElement.videoHeight;
+            canvas.getContext('2d').drawImage(videoElement, 0, 0, canvas.width, canvas.height);
+
+            // Convert canvas to image data URL
+            const imageUrl = canvas.toDataURL('image/png');
+
+            // Optionally, you can save the captured image or display it
+            const imgElement = new Image();
+            imgElement.src = imageUrl;
+            document.body.appendChild(imgElement);
+
+            // Example of sending the image data to a server
+            // fetch('/save-image', {
+            //     method: 'POST',
+            //     body: imageUrl
+            // }).then(response => {
+            //     console.log('Image saved:', response);
+            // }).catch(error => {
+            //     console.error('Error saving image:', error);
+            // });
+        });
+    </script>
+</body>
+</html>
